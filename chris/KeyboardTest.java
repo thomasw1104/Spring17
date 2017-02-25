@@ -1,11 +1,13 @@
 package application;
 
+import java.util.ArrayList;
+
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class KeyboardTest extends MovableObjects implements EventHandler<KeyEvent> {
-
+	public ArrayList<Object> inv;
 	public KeyboardTest(String imageName, int xSquare, int ySquare, int xSize, int ySize, int gl1x, int gl1y) {
 		super(imageName, xSquare, ySquare, xSize, ySize, gl1x, gl1y);
 

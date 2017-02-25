@@ -38,6 +38,7 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 	public Filler genericFiller = new Filler();
 
 	public KeyboardTest hero;
+	public Spider test;
 
 	public static double getYMovement() {
 		return moveUp;
@@ -47,6 +48,7 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 		return moveSideways;
 	}
 
+	// (int) WINDOW_WIDTH / MAP_WIDTH
 	@Override
 	public void start(Stage primaryStage) {
 		hero = new KeyboardTest("file:/home/esc/workspace/spring17/src/chara.png", (int) WINDOW_WIDTH / MAP_WIDTH,
@@ -55,9 +57,11 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 		hero.gl1x = 1;
 		hero.gl1y = 1;
 		primaryStage.setTitle("Map Experiment");
+		test = new Spider("spider.png", 5*(int) moveSideways, 5*(int) moveUp, (int) moveSideways, (int) moveUp, 5, 5);
 		// lets get hero image in there
-		Group root = new Group(hero.iv);
+		Group root = new Group(hero.iv,test.iv);
 		gameLayer1[hero.gl1x][hero.gl1y] = hero;
+		gameLayer1[test.gl1x][test.gl1y] = test;
 		Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT, Color.WHITE);
 		primaryStage.setScene(scene);
 
@@ -70,6 +74,7 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 		root.getChildren().add(canvas);
 		// uncomment for full screen fucc that tho
 		// primaryStage.setFullScreen(true);
+		test.iv.toFront();
 		hero.iv.toFront();
 		scene.setOnKeyTyped(this);
 		primaryStage.show();
