@@ -52,14 +52,13 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 	@Override
 	public void start(Stage primaryStage) {
 		hero = new KeyboardTest("file:/home/esc/workspace/spring17/src/chara.png", (int) WINDOW_WIDTH / MAP_WIDTH,
-				(int) WINDOW_HEIGHT / MAP_HEIGHT, (int) WINDOW_WIDTH / MAP_WIDTH, (int) WINDOW_HEIGHT / MAP_HEIGHT, 0,
-				0);
-		hero.gl1x = 1;
-		hero.gl1y = 1;
+				(int) WINDOW_HEIGHT / MAP_HEIGHT, (int) WINDOW_WIDTH / MAP_WIDTH, (int) WINDOW_HEIGHT / MAP_HEIGHT, 1,
+				1);
+
 		primaryStage.setTitle("Map Experiment");
-		test = new Spider("spider.png", 5*(int) moveSideways, 5*(int) moveUp, (int) moveSideways, (int) moveUp, 5, 5);
+		test = new Spider("spider.png", (int) moveSideways, (int) moveUp, (int) moveSideways, (int) moveUp, 5, 5);
 		// lets get hero image in there
-		Group root = new Group(hero.iv,test.iv);
+		Group root = new Group(hero.iv, test.iv);
 		gameLayer1[hero.gl1x][hero.gl1y] = hero;
 		gameLayer1[test.gl1x][test.gl1y] = test;
 		Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT, Color.WHITE);
@@ -78,6 +77,9 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 		hero.iv.toFront();
 		scene.setOnKeyTyped(this);
 		primaryStage.show();
+		String testt = "application.Enemy";
+		System.out.println(gameLayer1[0][0].getClass().getName());
+
 	}
 
 	public void drawOpenDungeon() {
@@ -118,28 +120,69 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 	@Override
 	public void handle(KeyEvent event) {
 
-		if (event.getCharacter().equals("w") && gameLayer1[hero.gl1y - 1][hero.gl1x] == null)
+		if (event.getCharacter().equals("w")
+				&& (gameLayer1[hero.gl1y - 1][hero.gl1x] == null || ((gameLayer1[hero.gl1y - 1][hero.gl1x] != null
+						&& !gameLayer1[hero.gl1y - 1][hero.gl1x].getClass().getName().equals("application.Filler"))
+						&& gameLayer1[hero.gl1y - 1][hero.gl1x].getClass().getSuperclass().getSuperclass().getName()
+								.equals("application.MovableObjects"))))
 
 		{
+			if ((gameLayer1[hero.gl1y - 1][hero.gl1x] != null) && gameLayer1[hero.gl1y - 1][hero.gl1x].getClass()
+					.getSuperclass().getSuperclass().getName().equals("application.MovableObjects")) {
+				System.out.println("interact");
+			}
 			// hero.iv.setX(hero.iv.getX());
-			hero.iv.setY(hero.iv.getY() - (getYMovement()));
+			else {
+				hero.iv.setY(hero.iv.getY() - (getYMovement()));
+				gameLayer1[--hero.gl1y][hero.gl1x] = hero;
+				gameLayer1[hero.gl1y + 1][hero.gl1x] = null;
+			}
+		} else if (event.getCharacter().equals("s")
+				&& (gameLayer1[hero.gl1y + 1][hero.gl1x] == null || ((gameLayer1[hero.gl1y + 1][hero.gl1x] != null
+						&& !gameLayer1[hero.gl1y + 1][hero.gl1x].getClass().getName().equals("application.Filler"))
+						&& gameLayer1[hero.gl1y + 1][hero.gl1x].getClass().getSuperclass().getSuperclass().getName()
+								.equals("application.MovableObjects")))) {
 
-			gameLayer1[hero.gl1y--][hero.gl1x] = hero;
-			gameLayer1[hero.gl1y + 1][hero.gl1x] = null;
-		} else if (event.getCharacter().equals("s") && gameLayer1[hero.gl1y + 1][hero.gl1x] == null) {
-			hero.iv.setY(hero.iv.getY() + (getYMovement()));
-			hero.gl1y++;
-			gameLayer1[hero.gl1y - 1][hero.gl1x] = null;
+			if ((gameLayer1[hero.gl1y + 1][hero.gl1x] != null) && gameLayer1[hero.gl1y + 1][hero.gl1x].getClass()
+					.getSuperclass().getSuperclass().getName().equals("application.MovableObjects")) {
+				System.out.println("interact");
+			}
 
-		} else if (event.getCharacter().equals("d") && gameLayer1[hero.gl1y][hero.gl1x + 1] == null) {
-			hero.iv.setX(hero.iv.getX() + getXMovement());
-			hero.gl1x++;
-			gameLayer1[hero.gl1y][hero.gl1x - 1] = null;
+			else {
+				hero.iv.setY(hero.iv.getY() + (getYMovement()));
+				gameLayer1[++hero.gl1y][hero.gl1x] = hero;
+				gameLayer1[hero.gl1y - 1][hero.gl1x] = null;
+			}
 
-		} else if (event.getCharacter().equals("a") && gameLayer1[hero.gl1y][hero.gl1x - 1] == null) {
+		} else if (event.getCharacter().equals("d")
+				&& (gameLayer1[hero.gl1y][hero.gl1x + 1] == null || ((gameLayer1[hero.gl1y][hero.gl1x + 1] != null
+						&& !gameLayer1[hero.gl1y][hero.gl1x + 1].getClass().getName().equals("application.Filler"))
+						&& gameLayer1[hero.gl1y][hero.gl1x + 1].getClass().getSuperclass().getSuperclass().getName()
+								.equals("application.MovableObjects")))) {
+
+			if ((gameLayer1[hero.gl1y][hero.gl1x + 1] != null) && gameLayer1[hero.gl1y][hero.gl1x + 1].getClass()
+					.getSuperclass().getSuperclass().getName().equals("application.MovableObjects")) {
+				System.out.println("interact");
+			} else {
+				hero.iv.setX(hero.iv.getX() + getXMovement());
+				gameLayer1[hero.gl1y][++hero.gl1x] = hero;
+				gameLayer1[hero.gl1y][hero.gl1x - 1] = null;
+			}
+
+		} else if (event.getCharacter().equals("a")
+				&& (gameLayer1[hero.gl1y][hero.gl1x - 1] == null || ((gameLayer1[hero.gl1y][hero.gl1x - 1] != null
+						&& !gameLayer1[hero.gl1y][hero.gl1x - 1].getClass().getName().equals("application.Filler"))
+						&& gameLayer1[hero.gl1y][hero.gl1x - 1].getClass().getSuperclass().getSuperclass().getName()
+								.equals("application.MovableObjects")))) {
+			if ((gameLayer1[hero.gl1y][hero.gl1x - 1] != null) && gameLayer1[hero.gl1y][hero.gl1x - 1].getClass()
+					.getSuperclass().getSuperclass().getName().equals("application.MovableObjects")) {
+				System.out.println("interact");
+			}
+			else{
 			hero.iv.setX(hero.iv.getX() - getXMovement());
-			hero.gl1x--;
+			gameLayer1[hero.gl1y][--hero.gl1x] = hero;
 			gameLayer1[hero.gl1y][hero.gl1x + 1] = null;
+			}
 		}
 
 	}
