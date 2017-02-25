@@ -7,8 +7,8 @@ import javafx.scene.input.KeyEvent;
 
 public class MovableObjects extends Entity implements EventHandler<KeyEvent> {
 
-	public MovableObjects(String imageName, int xSquare, int ySquare, int xSize, int ySize) {
-		super(imageName, xSquare, ySquare, xSize, ySize);
+	public MovableObjects(String imageName, int xSquare, int ySquare, int xSize, int ySize, int gl1x, int gl1y) {
+		super(imageName, xSquare, ySquare, xSize, ySize, gl1x, gl1y);
 		x = xSquare;
 		y = ySquare;
 	}
