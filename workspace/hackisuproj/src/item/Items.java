@@ -25,11 +25,6 @@ public abstract class Items extends Entity {
 		walkOver = true;
 
 	}
-
-	public boolean isConsumable() {//????
-		return false;
-	}
-
 	public boolean pickUp(Boolean b){
 		return b;
 	}
