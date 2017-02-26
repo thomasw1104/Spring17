@@ -1,24 +1,21 @@
 package application;
 
-import java.awt.geom.Rectangle2D;
-import javafx.geometry.*;
-
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Random;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
 import javafx.scene.Group;
-import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcType;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 
 public class Main1 extends Application implements EventHandler<KeyEvent> {
 	public static int MAP_WIDTH = 25;
@@ -39,6 +36,8 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 
 	public KeyboardTest hero;
 	public Spider test;
+	public Group root;
+	ArrayList<ImageView> monsters = new ArrayList<ImageView>();
 
 	public static double getYMovement() {
 		return moveUp;
@@ -51,16 +50,19 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 	// (int) WINDOW_WIDTH / MAP_WIDTH
 	@Override
 	public void start(Stage primaryStage) {
-		hero = new KeyboardTest("file:/home/esc/workspace/spring17/src/chara.png", (int) WINDOW_WIDTH / MAP_WIDTH,
+		hero = new KeyboardTest("chara.png", (int) WINDOW_WIDTH / MAP_WIDTH,
 				(int) WINDOW_HEIGHT / MAP_HEIGHT, (int) WINDOW_WIDTH / MAP_WIDTH, (int) WINDOW_HEIGHT / MAP_HEIGHT, 1,
 				1);
 
 		primaryStage.setTitle("Map Experiment");
 		test = new Spider("spider.png", (int) moveSideways, (int) moveUp, (int) moveSideways, (int) moveUp, 5, 5);
 		// lets get hero image in there
-		Group root = new Group(hero.iv, test.iv);
+		drawRandomDungeon(5);
+		root = new Group(hero.iv);
+		for (int i = 0; i < monsters.size(); i++)
+			root.getChildren().add(monsters.get(i));
+		
 		gameLayer1[hero.gl1x][hero.gl1y] = hero;
-		gameLayer1[test.gl1x][test.gl1y] = test;
 		Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT, Color.WHITE);
 		primaryStage.setScene(scene);
 
@@ -68,18 +70,37 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 		// making walls Filler objects
 		Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
 		GraphicsContext graphics = canvas.getGraphicsContext2D();
-		drawOpenDungeon();
 		drawMap(graphics);
-		root.getChildren().add(canvas);
+		root.getChildren().addAll(canvas);
 		// uncomment for full screen fucc that tho
 		// primaryStage.setFullScreen(true);
 		test.iv.toFront();
 		hero.iv.toFront();
+		for (int i = 0; i < monsters.size(); i++)
+			monsters.get(i).toFront();
 		scene.setOnKeyTyped(this);
 		primaryStage.show();
-		String testt = "application.Enemy";
+		String test = "application.Enemy";
 		System.out.println(gameLayer1[0][0].getClass().getName());
 
+	}
+	
+	public void drawRandomDungeon(int numEnemies){
+		Random rand = new Random();
+		drawOpenDungeon();
+		for (int i = 0; i < numEnemies; i++){
+			int col = rand.nextInt(MAP_WIDTH - 1) + 1;
+			int row = rand.nextInt(MAP_HEIGHT - 1) + 1;
+			if (col == 1 && row == 1)
+				i--;
+			else{
+				Spider spider = new Spider("spider.png", (int) moveUp, (int) moveSideways, (int) moveUp, 
+						(int) moveSideways, col, row);
+				gameLayer1[row][col] = spider;
+				monsters.add(spider.iv);
+			}
+				
+		}
 	}
 
 	public void drawOpenDungeon() {
@@ -92,7 +113,6 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 	}
 
 	private void drawMap(GraphicsContext graphics) {
-		Random rand = new Random();
 		for (int i = 0; i < MAP_WIDTH; i++) {
 			for (int j = 0; j < MAP_HEIGHT; j++) {
 				if (gameLayer[i][j]) {
