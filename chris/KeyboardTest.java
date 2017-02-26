@@ -7,12 +7,25 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class KeyboardTest extends MovableObjects implements EventHandler<KeyEvent> {
-	public ArrayList<Object> inv;
+	public ArrayList<Items> bag = new ArrayList<Items>();
+
+	public boolean bagFull() {
+		if (bag.size() > 15) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean pickUp(Boolean b) {
+		if (!bagFull())
+			return true;
+		return false;
+	}
+
 	public KeyboardTest(String imageName, int xSquare, int ySquare, int xSize, int ySize, int gl1x, int gl1y) {
 		super(imageName, xSquare, ySquare, xSize, ySize, gl1x, gl1y);
 
 	}
-
 
 	@Override
 	public void interact() {

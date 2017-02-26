@@ -1,21 +1,25 @@
 package application;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.awt.geom.Rectangle2D;
+import javafx.geometry.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
+import javafx.scene.shape.ArcType;
 
 public class Main1 extends Application implements EventHandler<KeyEvent> {
 	public static int MAP_WIDTH = 25;
@@ -31,13 +35,15 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 
 	public boolean gameLayer[][] = new boolean[MAP_HEIGHT][MAP_WIDTH];
 	public Object gameLayer1[][] = new Object[MAP_HEIGHT][MAP_WIDTH];
+	public Items[][] gameLayer2 = new Items[(int) moveUp][(int) moveSideways];
 
 	public Filler genericFiller = new Filler();
 
 	public KeyboardTest hero;
 	public Spider test;
-	public Group root;
-	ArrayList<ImageView> monsters = new ArrayList<ImageView>();
+	public Items itemTest;
+
+	public ArrayList<Entity> monsters = new ArrayList();
 
 	public static double getYMovement() {
 		return moveUp;
@@ -50,19 +56,21 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 	// (int) WINDOW_WIDTH / MAP_WIDTH
 	@Override
 	public void start(Stage primaryStage) {
-		hero = new KeyboardTest("chara.png", (int) WINDOW_WIDTH / MAP_WIDTH,
+		hero = new KeyboardTest("file:/home/esc/workspace/spring17/src/chara.png", (int) WINDOW_WIDTH / MAP_WIDTH,
 				(int) WINDOW_HEIGHT / MAP_HEIGHT, (int) WINDOW_WIDTH / MAP_WIDTH, (int) WINDOW_HEIGHT / MAP_HEIGHT, 1,
 				1);
 
 		primaryStage.setTitle("Map Experiment");
 		test = new Spider("spider.png", (int) moveSideways, (int) moveUp, (int) moveSideways, (int) moveUp, 5, 5);
+		itemTest = new Items("item.png", (int) moveSideways, (int) moveUp, (int) moveSideways, (int) moveUp, 10, 10);
 		// lets get hero image in there
-		drawRandomDungeon(5);
-		root = new Group(hero.iv);
-		for (int i = 0; i < monsters.size(); i++)
-			root.getChildren().add(monsters.get(i));
-		
+		Group root = new Group(hero.iv, test.iv);
+		root.getChildren().addAll(itemTest.iv);
 		gameLayer1[hero.gl1x][hero.gl1y] = hero;
+		gameLayer1[test.gl1x][test.gl1y] = test;
+		gameLayer2[itemTest.gl1x][itemTest.gl1y] = itemTest;
+		drawRandomDungeon(8);
+		addListToGroup(root, monsters);
 		Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT, Color.WHITE);
 		primaryStage.setScene(scene);
 
@@ -71,36 +79,20 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 		Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
 		GraphicsContext graphics = canvas.getGraphicsContext2D();
 		drawMap(graphics);
-		root.getChildren().addAll(canvas);
+		root.getChildren().add(canvas);
 		// uncomment for full screen fucc that tho
 		// primaryStage.setFullScreen(true);
+		itemTest.iv.toFront();
 		test.iv.toFront();
-		hero.iv.toFront();
-		for (int i = 0; i < monsters.size(); i++)
-			monsters.get(i).toFront();
+		//hero.iv.toFront();
+		toFrontArrList(monsters);
+		root.toFront();
+
 		scene.setOnKeyTyped(this);
 		primaryStage.show();
-		String test = "application.Enemy";
+		String testt = "application.Enemy";
 		System.out.println(gameLayer1[0][0].getClass().getName());
 
-	}
-	
-	public void drawRandomDungeon(int numEnemies){
-		Random rand = new Random();
-		drawOpenDungeon();
-		for (int i = 0; i < numEnemies; i++){
-			int col = rand.nextInt(MAP_WIDTH - 1) + 1;
-			int row = rand.nextInt(MAP_HEIGHT - 1) + 1;
-			if (col == 1 && row == 1)
-				i--;
-			else{
-				Spider spider = new Spider("spider.png", (int) moveUp, (int) moveSideways, (int) moveUp, 
-						(int) moveSideways, col, row);
-				gameLayer1[row][col] = spider;
-				monsters.add(spider.iv);
-			}
-				
-		}
 	}
 
 	public void drawOpenDungeon() {
@@ -113,6 +105,7 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 	}
 
 	private void drawMap(GraphicsContext graphics) {
+		Random rand = new Random();
 		for (int i = 0; i < MAP_WIDTH; i++) {
 			for (int j = 0; j < MAP_HEIGHT; j++) {
 				if (gameLayer[i][j]) {
@@ -137,7 +130,9 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 		launch(args);
 	}
 
-	@Override
+	/**
+	 * @Override
+	 */
 	public void handle(KeyEvent event) {
 
 		if (event.getCharacter().equals("w")
@@ -197,14 +192,60 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 			if ((gameLayer1[hero.gl1y][hero.gl1x - 1] != null) && gameLayer1[hero.gl1y][hero.gl1x - 1].getClass()
 					.getSuperclass().getSuperclass().getName().equals("application.MovableObjects")) {
 				System.out.println("interact");
+			} else {
+				hero.iv.setX(hero.iv.getX() - getXMovement());
+				gameLayer1[hero.gl1y][--hero.gl1x] = hero;
+				gameLayer1[hero.gl1y][hero.gl1x + 1] = null;
 			}
-			else{
-			hero.iv.setX(hero.iv.getX() - getXMovement());
-			gameLayer1[hero.gl1y][--hero.gl1x] = hero;
-			gameLayer1[hero.gl1y][hero.gl1x + 1] = null;
+		} else if (event.getCharacter().equals("e") && gameLayer2[hero.gl1x][hero.gl1y] != null) {
+			if (hero.bagFull())
+				System.out.println("no mo sht");
+			else {
+				hero.bag.add(gameLayer2[hero.gl1x][hero.gl1y]);
+				gameLayer2[hero.gl1x][hero.gl1y].iv.setImage(null);
+				gameLayer2[hero.gl1x][hero.gl1y] = null;
+
+				System.out.println("Just picked up: " + hero.bag.get(0).toString());
 			}
 		}
 
+	}
+
+	public void drawRandomDungeon(int numEnemies) {
+		boolean allGood = false;
+		Random rand = new Random();
+		drawOpenDungeon();
+		while (monsters.size() < numEnemies) {
+
+			while (!allGood) {
+				int col = rand.nextInt(MAP_WIDTH - 1) + 1;
+				int row = rand.nextInt(MAP_HEIGHT - 1) + 1;
+				if (gameLayer[row][col] && gameLayer1[row][col] == null)
+					allGood = true;
+				if (allGood) {
+					Spider spiderName = new Spider("spider.png", (int) moveUp, (int) moveSideways, (int) moveUp,
+							(int) moveSideways, col, row);
+					gameLayer1[row][col] = spiderName;
+					monsters.add(spiderName);
+				}
+
+			}
+			allGood = false;
+		}
+	}
+
+	public void addListToGroup(Group gr, ArrayList<Entity> arrlist) {
+		for (int i = 0; i < arrlist.size(); i++) {
+			gr.getChildren().addAll(arrlist.get(i).iv);
+
+		}
+	}
+
+	public void toFrontArrList(ArrayList<Entity> arr) {
+		for (int i = 0; i < arr.size(); i++) {
+			Entity test = arr.get(i);
+			test.iv.toFront();
+		}
 	}
 
 	public void setCharLocation(int x, int y) {
