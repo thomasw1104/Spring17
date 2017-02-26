@@ -1,11 +1,10 @@
-package item;
+package Entities;
 
+import item.Items;
 import javafx.stage.Stage;
 
 public class Food extends Items {
 
-	
-	public int health; // should probably go in character class????
 	private static final int HEALTH_ADD = 5;
 
 	public Food(String imageName, int xSquare, int ySquare, int width, int height) {
@@ -14,12 +13,13 @@ public class Food extends Items {
 
 	// add conditional for picking up food
 	public void addHealth() {
-		health += HEALTH_ADD;
+		MovableObjects.health += HEALTH_ADD;
 	}
 
 	@Override
 	public void interact() {
-		if(pickup == true) addHealth();
+		boolean picked = super.pickUp(null);
+		if(picked == true && MovableObjects.health < 100) addHealth();
 	}
 
 	@Override
