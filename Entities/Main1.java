@@ -1,25 +1,18 @@
 package application;
 
-import java.awt.geom.Rectangle2D;
-import javafx.geometry.*;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcType;
 
 public class Main1 extends Application implements EventHandler<KeyEvent> {
 	public static int MAP_WIDTH = 25;
@@ -43,7 +36,7 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 	public Spider test;
 	public Items itemTest;
 
-	public ArrayList<Entity> monsters = new ArrayList();
+	public ArrayList<Entity> monsters = new ArrayList<Entity>();
 
 	public static double getYMovement() {
 		return moveUp;
@@ -89,8 +82,6 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 
 		scene.setOnKeyTyped(this);
 		primaryStage.show();
-		String testt = "application.Enemy";
-		System.out.println(gameLayer1[0][0].getClass().getName());
 
 	}
 
@@ -104,7 +95,6 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 	}
 
 	private void drawMap(GraphicsContext graphics) {
-		Random rand = new Random();
 		for (int i = 0; i < MAP_WIDTH; i++) {
 			for (int j = 0; j < MAP_HEIGHT; j++) {
 				if (gameLayer[i][j]) {
@@ -232,6 +222,20 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 
 			}
 			allGood = false;
+			
+//			for (int row = 1; row < MAP_WIDTH - 1; row++){
+//				for (int col = 1; col < MAP_HEIGHT; col++){
+//					int fill = rand.nextInt(4);
+//					if (!(row == 1 && col==1)){
+//						if (fill == 0)
+//							gameLayer[row][col] = false;
+//						else
+//							gameLayer[row][col] = true;
+//					}
+//				}
+//			} 
+			
+			generateRoom();
 		}
 	}
 
@@ -251,5 +255,18 @@ public class Main1 extends Application implements EventHandler<KeyEvent> {
 
 	public void setCharLocation(int x, int y) {
 
+	}
+	
+	public void generateRoom(){
+		
+		Random rand = new Random();
+		int sideLength = rand.nextInt(MAP_HEIGHT - 10) + 1;
+		
+		for (int row = 8; row < MAP_WIDTH - 1; row++){
+			for (int col = 8; col < MAP_HEIGHT - 1; col++){
+				gameLayer[row][col] = false;
+			}
+		}
+		
 	}
 }
